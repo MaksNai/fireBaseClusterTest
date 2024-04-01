@@ -12,7 +12,7 @@ export class Greeting extends Component {
 //   }
 
   state: Readonly<{}> = {}
-
+ 
   render() {
     return <h1>Hello!</h1>
   }
