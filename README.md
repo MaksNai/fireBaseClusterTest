@@ -4,6 +4,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
+todoclass-e9ef2
+https://console.firebase.google.com/project/todoclass-e9ef2/overview
+
 ```bash
 npm run dev
 # or
