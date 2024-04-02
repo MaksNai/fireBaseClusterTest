@@ -33,7 +33,7 @@
   grid-column: span 2;
   color: #333333;
   &.completed {
-    text-decoration: line-through;
+    border-bottom: 1px solid #333333;
   }
 
   &.important {

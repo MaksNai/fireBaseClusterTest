@@ -1,28 +1,16 @@
 'use client'
-import { Component, ChangeEvent } from 'react'
+import { Component, ChangeEvent, FormEvent } from 'react'
 
 import firebase from 'firebase/compat/app'
 // Required for side-effects
 import 'firebase/firestore'
+import { doc, collection, addDoc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore'
 
 import styles from './toDoList.module.scss'
-import { TimeAgo } from '@/components/TimeAgo/TimeAgo'
 
 import { db } from '@/firebase/firebase'
-import { collection, addDoc } from 'firebase/firestore'
-
-// async function writeUserData() {
-//   try {
-//     const docRef = await addDoc(collection(db, "users"), {
-//       first: "Ada",
-//       last: "Lovelace",
-//       born: 1815
-//     });
-//     console.log("Document written with ID: ", docRef.id);
-//   } catch (e) {
-//     console.error("Error adding document: ", e);
-//   }
-// }
+import { TimeAgo } from '@/components/TimeAgo/TimeAgo'
+import {getDate} from './helpers'
 
 interface ToDoItem {
   id: string
@@ -43,39 +31,79 @@ export class ToDoList extends Component<{}, ToDoState> {
     inputText: '',
   }
 
+  async componentDidMount(): Promise<void> {
+    const querySnapshot = await getDocs(collection(db, 'tasks'))
+    const items: ToDoItem[] = []
+    querySnapshot.forEach((doc) => {
+      const data = doc.data()
+      const newItem: ToDoItem = {
+        id: doc.id,
+        text: data.text,
+        completed: data.completed,
+        createdAt: getDate(data.createdAt),
+        important: data.important,
+      }
+
+      items.push(newItem)
+    })
+
+    const uniqueItems = Array.from(new Set(items.map((item) => item.id))).map((id) => {
+      return items.find((item) => item.id === id)!
+    })
+
+    this.setState({
+      toDoItems: uniqueItems,
+      inputText: '',
+    })
+  }
+
+  filterDate = () => {}
+
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ inputText: e.target.value })
   }
 
-  addTodo = async () => {
-    if (this.state.inputText.length === 0) return
-    const newItem: ToDoItem = {
-      id: Date.now().toString(),
-      text: this.state.inputText,
-      completed: false,
-      createdAt: new Date(),
-      important: false,
-    }
+  addTodo = async (e: FormEvent) => {
+    e.preventDefault()
+    const { inputText, toDoItems } = this.state
+    if (inputText.length === 0) return
 
     try {
-      await addDoc(collection(db, 'users'), newItem)
+      const newItem = {
+        text: inputText,
+        completed: false,
+        createdAt: new Date(),
+        important: false,
+      }
+
+      const docRef = await addDoc(collection(db, 'tasks'), newItem)
+
+      this.setState({
+        toDoItems: [...toDoItems, { ...newItem, id: docRef.id, createdAt: newItem.createdAt }],
+        inputText: '',
+      })
     } catch (e) {
       console.error('Error adding document: ', e)
     }
-
-    this.setState((prevState) => ({
-      toDoItems: [...prevState.toDoItems, newItem],
-      inputText: '',
-    }))
   }
 
-  deleteTodo = (id: number) => {
-    this.setState((prevState) => ({
-      toDoItems: prevState.toDoItems.filter((item) => Number(item.id) !== Number(id)),
-    }))
+  deleteTodo = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'tasks', id))
+      this.setState((prevState) => ({
+        toDoItems: prevState.toDoItems.filter((item) => item.id !== id),
+      }))
+    } catch (error) {
+      console.error('Error while deleting task: ', error)
+    }
   }
 
-  toggleComplete = (id: string) => {
+  toggleComplete = async (id: string) => {
+    const item = this.state.toDoItems.find((item) => item.id === id)
+    console.log(item)
+    await updateDoc(doc(db, 'tasks', id), {
+      completed: !item?.completed,
+    })
     this.setState((prevState) => ({
       toDoItems: prevState.toDoItems.map((item) =>
         item.id === id ? { ...item, completed: !item.completed } : item,
@@ -83,7 +111,12 @@ export class ToDoList extends Component<{}, ToDoState> {
     }))
   }
 
-  toggleImportant = (id: string) => {
+  toggleImportant = async (id: string) => {
+    const item = this.state.toDoItems.find((item) => item.id === id)
+    console.log(item)
+    await updateDoc(doc(db, 'tasks', id), {
+      important: !item?.important,
+    })
     this.setState((prevState) => ({
       toDoItems: prevState.toDoItems.map((item) =>
         item.id === id ? { ...item, important: !item.important } : item,
@@ -93,6 +126,7 @@ export class ToDoList extends Component<{}, ToDoState> {
 
   render() {
     return (
+      <form>
       <div className={styles.todoContainer}>
         <div className={styles.addContainer}>
           <input
@@ -122,16 +156,14 @@ export class ToDoList extends Component<{}, ToDoState> {
               <button onClick={() => this.toggleComplete(item.id)} className={styles.button}>
                 Complete
               </button>
-              <button onClick={() => this.deleteTodo(Number(item.id))} className={styles.button}>
+              <button onClick={() => this.deleteTodo(item.id)} className={styles.button}>
                 Delete
               </button>
-              {/* <button onClick={writeUserData} className={styles.button}>
-                Test base
-              </button> */}
             </li>
           ))}
         </ul>
       </div>
+      </form>
     )
   }
 }
