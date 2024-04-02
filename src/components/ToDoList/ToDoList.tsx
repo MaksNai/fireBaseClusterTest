@@ -1,8 +1,6 @@
 'use client'
 import { Component, ChangeEvent, FormEvent } from 'react'
-
-import firebase from 'firebase/compat/app'
-// Required for side-effects
+import { User } from 'firebase/auth';
 import 'firebase/firestore'
 import { doc, collection, addDoc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore'
 
@@ -25,7 +23,11 @@ interface ToDoState {
   inputText: string
 }
 
-export class ToDoList extends Component<{}, ToDoState> {
+interface UserProps { 
+  currentUser: User;
+}
+
+export class ToDoList extends Component<UserProps, ToDoState> {
   state: ToDoState = {
     toDoItems: [],
     inputText: '',
@@ -56,8 +58,6 @@ export class ToDoList extends Component<{}, ToDoState> {
       inputText: '',
     })
   }
-
-  filterDate = () => {}
 
   handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     this.setState({ inputText: e.target.value })
@@ -100,7 +100,6 @@ export class ToDoList extends Component<{}, ToDoState> {
 
   toggleComplete = async (id: string) => {
     const item = this.state.toDoItems.find((item) => item.id === id)
-    console.log(item)
     await updateDoc(doc(db, 'tasks', id), {
       completed: !item?.completed,
     })
@@ -113,7 +112,6 @@ export class ToDoList extends Component<{}, ToDoState> {
 
   toggleImportant = async (id: string) => {
     const item = this.state.toDoItems.find((item) => item.id === id)
-    console.log(item)
     await updateDoc(doc(db, 'tasks', id), {
       important: !item?.important,
     })

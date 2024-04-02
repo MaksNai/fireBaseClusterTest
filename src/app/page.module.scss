@@ -1,3 +1,5 @@
+@use '../styles/mixins.scss';
+
 .main {
   display: flex;
   flex-direction: column;
@@ -6,6 +8,21 @@
   padding: 6rem;
   min-height: 100vh;
   box-sizing: border-box;
+}
+
+.top {
+  display: flex;
+  width: 80%;
+}
+
+.signOut {
+  @include mixins.button;
+  flex-basis: 300px;
+}
+
+.toggleForm {
+  @include mixins.button;
+  margin-top: 20px;
 }
 
 .description {
@@ -52,7 +69,9 @@
   border-radius: var(--border-radius);
   background: rgba(var(--card-rgb), 0);
   border: 1px solid rgba(var(--card-border-rgb), 0);
-  transition: background 200ms, border 200ms;
+  transition:
+    background 200ms,
+    border 200ms;
 }
 
 .card span {
@@ -99,7 +118,7 @@
 
 .center::before,
 .center::after {
-  content: "";
+  content: '';
   left: 50%;
   position: absolute;
   filter: blur(45px);
@@ -195,11 +214,7 @@
     inset: auto 0 0;
     padding: 2rem;
     height: 200px;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgb(var(--background-end-rgb)) 40%
-    );
+    background: linear-gradient(to bottom, transparent 0%, rgb(var(--background-end-rgb)) 40%);
     z-index: 1;
   }
 }
