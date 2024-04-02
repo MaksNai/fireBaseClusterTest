@@ -10,7 +10,7 @@ import styles from './toDoList.module.scss'
 
 import { db } from '@/firebase/firebase'
 import { TimeAgo } from '@/components/TimeAgo/TimeAgo'
-import {getDate} from './helpers'
+import { getDate } from './helpers'
 
 interface ToDoItem {
   id: string
@@ -127,42 +127,54 @@ export class ToDoList extends Component<{}, ToDoState> {
   render() {
     return (
       <form>
-      <div className={styles.todoContainer}>
-        <div className={styles.addContainer}>
-          <input
-            className={styles.inputField}
-            type="text"
-            value={this.state.inputText}
-            onChange={this.handleInputChange}
-          />
-          <button className={styles.button} onClick={this.addTodo}>
-            Add Task
-          </button>
+        <div className={styles.todoContainer}>
+          <div className={styles.addContainer}>
+            <input
+              className={styles.inputField}
+              type="text"
+              value={this.state.inputText}
+              onChange={this.handleInputChange}
+            />
+            <button className={styles.button} onClick={this.addTodo} type='submit'>
+              Add Task
+            </button>
+          </div>
+          <ul className={styles.todoList}>
+            {this.state.toDoItems.map((item) => (
+              <li key={item.id} className={styles.todoItem}>
+                <span
+                  className={`${styles.itemText} ${item.completed ? styles.completed : ''}  ${item.important ? styles.important : ''} `}
+                >
+                  {item.text}
+                </span>
+                <p className={styles.timeAgo}>
+                  <TimeAgo timestamp={item.createdAt.toISOString()} />
+                </p>
+                <button
+                  onClick={() => this.toggleImportant(item.id)}
+                  className={styles.button}
+                  type="button"
+                >
+                  Important
+                </button>
+                <button
+                  onClick={() => this.toggleComplete(item.id)}
+                  className={styles.button}
+                  type="button"
+                >
+                  Complete
+                </button>
+                <button
+                  onClick={() => this.deleteTodo(item.id)}
+                  className={styles.button}
+                  type="button"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className={styles.todoList}>
-          {this.state.toDoItems.map((item) => (
-            <li key={item.id} className={styles.todoItem}>
-              <span
-                className={`${styles.itemText} ${item.completed ? styles.completed : ''}  ${item.important ? styles.important : ''} `}
-              >
-                {item.text}
-              </span>
-              <p className={styles.timeAgo}>
-                <TimeAgo timestamp={item.createdAt.toISOString()} />
-              </p>
-              <button onClick={() => this.toggleImportant(item.id)} className={styles.button}>
-                Important
-              </button>
-              <button onClick={() => this.toggleComplete(item.id)} className={styles.button}>
-                Complete
-              </button>
-              <button onClick={() => this.deleteTodo(item.id)} className={styles.button}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
       </form>
     )
   }
