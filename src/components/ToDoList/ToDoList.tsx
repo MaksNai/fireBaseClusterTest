@@ -1,7 +1,28 @@
 'use client'
 import { Component, ChangeEvent } from 'react'
+
+import firebase from "firebase/compat/app";
+// Required for side-effects
+import "firebase/firestore";
+
 import styles from './toDoList.module.scss'
 import { TimeAgo } from '@/components/TimeAgo/TimeAgo'
+
+import { db } from '@/firebase/firebase';
+import { collection, addDoc } from "firebase/firestore"; 
+
+async function writeUserData() {
+  try {
+    const docRef = await addDoc(collection(db, "users"), {
+      first: "Ada",
+      last: "Lovelace",
+      born: 1815
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
 
 interface ToDoItem {
   id: string
@@ -96,6 +117,9 @@ export class ToDoList extends Component<{}, ToDoState> {
               </button>
               <button onClick={() => this.deleteTodo(Number(item.id))} className={styles.button}>
                 Delete
+              </button>
+              <button onClick={writeUserData} className={styles.button}>
+                Test base
               </button>
             </li>
           ))}
