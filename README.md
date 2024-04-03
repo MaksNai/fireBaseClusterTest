@@ -4,6 +4,9 @@ https://fire-base-cluster-test-git-dev-maksnais-projects.vercel.app/
 
 First, run the development server:
 
+todoclass-e9ef2
+https://console.firebase.google.com/project/todoclass-e9ef2/overview
+
 ```bash
 npm run dev
 # or

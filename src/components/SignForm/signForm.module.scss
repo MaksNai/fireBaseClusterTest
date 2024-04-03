@@ -1,0 +1,30 @@
+@use '../../styles/mixins.scss';
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.label {
+  font-size: 16px;
+  color: #333333;
+}
+
+.field { 
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input {
+  @include mixins.inputField;
+}
+
+.button {
+  @include mixins.button;
+}

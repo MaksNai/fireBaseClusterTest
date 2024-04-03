@@ -1,0 +1,62 @@
+@use '../../styles/mixins.scss';
+
+.todoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 40px;
+}
+
+.todoList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.addContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.todoItem {
+  margin: 10px 0;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-rows: 40px auto;
+  align-items: center;
+  justify-items: center;
+  gap: 10px;
+
+  cursor: pointer;
+}
+
+.itemText {
+  font-size: 20px;
+  grid-column: span 2;
+  color: #333333;
+  &.completed {
+    text-decoration: line-through; 
+  }
+
+  &.important {
+    color: black;
+    border-bottom: 1px solid #333333;
+  }
+}
+
+.addButton {
+  margin-top: 10px;
+}
+
+.inputField {
+  @include mixins.inputField;
+}
+
+.timeAgo {
+  font-size: 14px;
+  font-style: italic;
+}
+
+.button {
+  @include mixins.button;
+}
